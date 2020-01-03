@@ -1,0 +1,117 @@
+#include <iostream>
+
+using namespace std;
+
+struct Node
+{
+	struct Node *lc;
+	int data;
+	int height;
+	struct Node *rc;
+
+};
+
+int NodeHeight(struct Node *p)
+{
+	int hl,hr;
+	hl = p && p->lc?p->lc->height:0;
+	hr = p && p->rc?p->rc->height:0;
+
+	return hl>hr?hl+1:hr+1;
+}
+
+int BalanceFactor(struct Node *p)
+{
+    int hl,hr;
+    hl = p && p->lc?p->lc->height:0;
+	hr = p && p->rc?p->rc->height:0;
+
+	return hl-hr;	
+}
+
+
+struct Node *LLRotation(struct Node *p)
+{
+	struct Node *pl = p->lc;
+	struct Node *plr = pl->rc;
+
+	pl->rc = p;
+	p->lc = plr;
+
+	p->height = NodeHeight(p);
+	pl->height = NodeHeight(pl);
+
+	if(root == p)
+		root=pl;
+
+return pl;
+}
+
+struct Node *RRRotation(struct Node *p)
+{
+	struct Node *pr = p->rc;
+	struct Node *prl = pr->lc;
+
+	pr->lc = p;
+	p->rc = prl;
+
+	if(root == p)
+		root = prl;
+return pr;
+}
+struct Node *LRRotation(struct Node *p)
+{
+	struct Node *pl = p->lc;
+	struct Node *plr = pl->rc;
+
+	plr->lc = pl;
+	plr->rc = p;
+	pl->rc = plr->lc;
+	p->lc = plr->rc;
+	 pl->height = NodeHeight(pl);
+	 plr->height = NodeHeight(plr);
+	 p->height = NodeHeight(p);
+	     if(root == p)
+	    	root = plr;
+
+return plr; 
+
+}
+
+struct Node *RInsert(struct Node *p,int k)
+{
+	struct Node *t = NULL;
+
+	if(p == NULL)
+	{
+		t = new Node;
+		t->data = k;
+		t->height = 1;
+		t->lc = t->rc = NULL;
+		return t;
+	}
+	if(k<p->data)
+		p->lc = RInsert(p->lc,k);
+	else if(k>p->data)
+		p->rc = RInsert(p->rc,k);
+	p->height = NodeHeight(p);
+	   if(BalanceFactor(p) == 2 && BalanceFactor(p->lc) == 1)
+	   	  LLRotation(p);
+	   else if(BalanceFactor(p) == 2 && BalanceFactor(p->lc) == -1)
+	   	  LRRotation(p);
+	   else if(BalanceFactor(p) == -2 && BalanceFactor(p->rc) == 1)
+	   	  RLRotation(p);
+	   else if(BalanceFactor(p) == -2 && BalanceFactor(p->rc) == -1)
+	   	  RRRotation(p);
+
+return p;
+}
+
+int main()
+{
+	struct Node *root = new Node;
+
+	root = RInsert(root,20);
+	RInsert(root,30);
+	RInsert(root,10);
+}
